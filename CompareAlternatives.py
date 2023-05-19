@@ -3,7 +3,7 @@ import hiv_model_param_uncertainty.model_classes as model
 import hiv_model_param_uncertainty.param_classes as param
 import hiv_model_param_uncertainty.support as support
 
-N_COHORTS = 200  # number of cohorts
+N_COHORTS = 20  # number of cohorts
 POP_SIZE = 500  # population size of each cohort
 
 # create a multi-cohort to simulate under mono therapy
@@ -17,7 +17,7 @@ multiCohortMono.simulate(n_time_steps=data.SIM_TIME_STEPS)
 
 # create a multi-cohort to simulate under combo therapy
 multiCohortCombo = model.MultiCohort(
-    ids=range(N_COHORTS, 2*N_COHORTS),
+    ids=range(N_COHORTS),
     pop_size=POP_SIZE,
     therapy=param.Therapies.COMBO
 )

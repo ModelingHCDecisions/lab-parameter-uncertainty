@@ -12,29 +12,20 @@ def print_outcomes(multi_cohort_outcomes, therapy_name):
     :param therapy_name: the name of the selected therapy
     """
     # mean and prediction interval of patient survival time
-    survival_mean_PI_text = multi_cohort_outcomes.statMeanSurvivalTime\
-        .get_formatted_mean_and_interval(interval_type='p',
-                                         alpha=data.ALPHA,
-                                         deci=2)
+    survival_mean_PI_text = multi_cohort_outcomes.statMeanSurvivalTime.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2)
 
     # mean and prediction interval text of time to AIDS
-    time_to_HIV_death_PI_text = multi_cohort_outcomes.statMeanTimeToAIDS\
-        .get_formatted_mean_and_interval(interval_type='p',
-                                         alpha=data.ALPHA,
-                                         deci=2)
+    time_to_HIV_death_PI_text = multi_cohort_outcomes.statMeanTimeToAIDS.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2)
 
     # mean and prediction interval text of discounted total cost
-    cost_mean_PI_text = multi_cohort_outcomes.statMeanCost\
-        .get_formatted_mean_and_interval(interval_type='p',
-                                         alpha=data.ALPHA,
-                                         deci=0,
-                                         form=',')
+    cost_mean_PI_text = multi_cohort_outcomes.statMeanCost.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2, form=',')
 
     # mean and prediction interval text of discounted total QALY
-    utility_mean_PI_text = multi_cohort_outcomes.statMeanQALY\
-        .get_formatted_mean_and_interval(interval_type='p',
-                                         alpha=data.ALPHA,
-                                         deci=2)
+    utility_mean_PI_text = multi_cohort_outcomes.statMeanQALY.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2)
 
     # print outcomes
     print(therapy_name)
@@ -69,7 +60,9 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
         y_label='Number of Patients Alive',
         legends=['Mono Therapy', 'Combination Therapy'],
         transparency=0.4,
-        color_codes=['green', 'blue']
+        color_codes=['green', 'blue'],
+        figure_size=(6, 5),
+        file_name='figs/survival_curves.png'
     )
 
     # histograms of survival times
@@ -84,11 +77,13 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
         title='Histograms of Mean Survival Time',
         x_label='Survival Time (year)',
         y_label='Counts',
-        bin_width=1,
-        x_range=[5.25, 17.75],
+        bin_width=0.5,
+        x_range=[5, 20],
         legends=['Mono Therapy', 'Combination Therapy'],
         color_codes=['green', 'blue'],
-        transparency=0.5
+        transparency=0.5,
+        figure_size=(6, 5),
+        file_name='figs/survival_times.png'
     )
 
 
@@ -106,12 +101,10 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
         y_ref=multi_cohort_outcomes_mono.meanSurvivalTimes)
 
     # estimate and PI
-    estimate_PI = increase_mean_survival_time.get_formatted_mean_and_interval(interval_type='p',
-                                                                              alpha=data.ALPHA,
-                                                                              deci=2)
+    estimate_PI = increase_mean_survival_time.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2)
     print("Increase in mean survival time and {:.{prec}%} uncertainty interval:"
-          .format(1 - data.ALPHA, prec=0),
-          estimate_PI)
+          .format(1 - data.ALPHA, prec=0), estimate_PI)
 
     # increase in mean discounted cost under combination therapy with respect to mono therapy
     increase_mean_discounted_cost = stat.DifferenceStatPaired(
@@ -120,13 +113,10 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
         y_ref=multi_cohort_outcomes_mono.meanCosts)
 
     # estimate and PI
-    estimate_PI = increase_mean_discounted_cost.get_formatted_mean_and_interval(interval_type='p',
-                                                                                alpha=data.ALPHA,
-                                                                                deci=2,
-                                                                                form=',')
+    estimate_PI = increase_mean_discounted_cost.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2, form=',')
     print("Increase in mean discounted cost and {:.{prec}%} uncertainty interval:"
-          .format(1 - data.ALPHA, prec=0),
-          estimate_PI)
+          .format(1 - data.ALPHA, prec=0), estimate_PI)
 
     # increase in mean discounted QALY under combination therapy with respect to mono therapy
     increase_mean_discounted_qaly = stat.DifferenceStatPaired(
@@ -135,12 +125,10 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
         y_ref=multi_cohort_outcomes_mono.meanQALYs)
 
     # estimate and PI
-    estimate_PI = increase_mean_discounted_qaly.get_formatted_mean_and_interval(interval_type='p',
-                                                                                alpha=data.ALPHA,
-                                                                                deci=2)
+    estimate_PI = increase_mean_discounted_qaly.get_formatted_mean_and_interval(
+        interval_type='p', alpha=data.ALPHA, deci=2)
     print("Increase in mean discounted utility and {:.{prec}%} uncertainty interval:"
-          .format(1 - data.ALPHA, prec=0),
-          estimate_PI)
+          .format(1 - data.ALPHA, prec=0), estimate_PI)
 
 
 def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
@@ -176,11 +164,12 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         y_label='Additional Discounted Cost',
         fig_size=(6, 5),
         add_clouds=True,
-        transparency=0.2)
+        transparency=0.2,
+        file_name='figs/cea.png')
 
     # report the CE table
     CEA.build_CE_table(
-        interval_type='p',  # uncertainty (projection) interval for cost and effect estimates
+        interval_type='p',  # uncertainty (projection) interval for cost and effect estimates but
                             # for ICER, confidence interval will be reported.
         alpha=data.ALPHA,
         cost_digits=0,
@@ -202,4 +191,5 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         interval_type='c', # show confidence interval
         show_legend=True,
         figure_size=(6, 5),
+        file_name='figs/nmb.png'
     )

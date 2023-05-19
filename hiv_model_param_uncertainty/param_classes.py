@@ -42,7 +42,7 @@ class ParameterGenerator:
                 a=probs, if_ignore_0s=True))
 
         # treatment relative risk
-        rr_ci = data.TREATMENT_RR_CI   # confidence interval of the treatment relative risk
+        rr_ci = [0.365, 0.71]  # confidence interval of the treatment relative risk
 
         # find the mean and st_dev of the normal distribution assumed for ln(RR)
         # sample mean ln(RR)
