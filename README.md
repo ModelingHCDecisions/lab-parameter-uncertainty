@@ -1,7 +1,7 @@
 # Lab: Modeling Parameter Uncertainty for HIV Model
 
 This repository uses:
-- [Lab_EconEvalContinuousTime](https://github.com/HPM573/Lab_EconEvalContinuousTime)
+- [Lab_EconEvalDiscreteTime](https://github.com/HPM573/Lab_EconEvalDiscreteTime)
 
 To run the code in this repository, the paths to the dependent repositories on your computer should 
 be included in the Content Root. 
