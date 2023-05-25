@@ -39,8 +39,8 @@ class ParameterGenerator:
         for probs in data.TRANS_MATRIX:
             # note:  for a Dirichlet distribution all values of the argument 'a' should be non-zero.
             # setting if_ignore_0s to True allows the Dirichlet distribution to take 'a' with zero values.
-            self.probMatrixRVG.append(rvgs.Dirichlet(
-                a=probs, if_ignore_0s=True))
+            self.probMatrixRVG.append(
+                rvgs.Dirichlet(a=probs, if_ignore_0s=True))
 
         # treatment relative risk
         rr_ci = [0.365, 0.71]  # confidence interval of the treatment relative risk
@@ -52,8 +52,7 @@ class ParameterGenerator:
         std_ln_rr = \
             (math.log(rr_ci[1]) - math.log(rr_ci[0])) / (2 * stat.norm.ppf(1 - 0.05 / 2))
         # create a normal distribution for ln(RR)
-        self.lnRelativeRiskRVG = rvgs.Normal(loc=mean_ln_rr,
-                                             scale=std_ln_rr)
+        self.lnRelativeRiskRVG = rvgs.Normal(loc=mean_ln_rr, scale=std_ln_rr)
 
         # create gamma distributions for annual state cost
         for cost in data.ANNUAL_STATE_COST:
@@ -67,9 +66,7 @@ class ParameterGenerator:
                 fit_output = rvgs.Gamma.fit_mm(mean=cost, st_dev=cost / 5)
                 # append the distribution
                 self.annualStateCostRVGs.append(
-                    rvgs.Gamma(a=fit_output["a"],
-                               loc=0,
-                               scale=fit_output["scale"]))
+                    rvgs.Gamma(a=fit_output["a"], loc=0, scale=fit_output["scale"]))
 
         # create a gamma distribution for annual treatment cost with each drug
         # first fit the gamma distribution to the cost of each drug
