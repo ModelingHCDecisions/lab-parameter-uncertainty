@@ -32,7 +32,8 @@ class ParameterGenerator:
         self.lnRelativeRiskRVG = None  # normal distribution for the natural log of the treatment relative risk
         self.annualStateCostRVGs = []  # list of gamma distributions for the annual cost of states
         self.annualStateUtilityRVGs = []  # list of beta distributions for the annual utility of states
-        self.annualTreatmentCostRVG = None   # gamma distribution for treatment cost
+        self.annualZidovudineCostRVG = None   # gamma distribution for the cost of zidovudine
+        self.annualLamivudineCostRVG = None   # gamma distribution for the cost of lamivudine
 
         # create Dirichlet distributions for transition probabilities
         for probs in data.TRANS_MATRIX:
@@ -70,15 +71,13 @@ class ParameterGenerator:
                                loc=0,
                                scale=fit_output["scale"]))
 
-        # create a gamma distribution for annual treatment cost
-        if self.therapy == Therapies.MONO:
-            annual_cost = data.Zidovudine_COST
-        else:
-            annual_cost = data.Zidovudine_COST + data.Lamivudine_COST
-        fit_output = rvgs.Gamma.fit_mm(mean=annual_cost, st_dev=annual_cost / 5)
-        self.annualTreatmentCostRVG = rvgs.Gamma(a=fit_output["a"],
-                                                 loc=0,
-                                                 scale=fit_output["scale"])
+        # create a gamma distribution for annual treatment cost with each drug
+        # first fit the gamma distribution to the cost of each drug
+        fit_output_zido = rvgs.Gamma.fit_mm(mean=data.Zidovudine_COST, st_dev=data.Zidovudine_COST / 5)
+        fit_output_lami = rvgs.Gamma.fit_mm(mean=data.Lamivudine_COST, st_dev=data.Lamivudine_COST / 5)
+        # then create the gamma distribution for the cost of each drug
+        self.annualZidovudineCostRVG = rvgs.Gamma(a=fit_output_zido["a"], loc=0, scale=fit_output_zido["scale"])
+        self.annualLamivudineCostRVG = rvgs.Gamma(a=fit_output_lami["a"], loc=0, scale=fit_output_lami["scale"])
 
         # create beta distributions for annual state utility
         for utility in data.ANNUAL_STATE_UTILITY:
@@ -132,8 +131,15 @@ class ParameterGenerator:
         for dist in self.annualStateCostRVGs:
             param.annualStateCosts.append(dist.sample(rng))
 
-        # sample from the gamma distribution that is assumed for the treatment cost
-        param.annualTreatmentCost = self.annualTreatmentCostRVG.sample(rng)
+        # sample from gamma distributions that are assumed for annual treatment costs
+        zido_cost = self.annualZidovudineCostRVG.sample(rng)
+        lami_cost = self.annualLamivudineCostRVG.sample(rng)
+
+        # calculate the annual treatment cost
+        if self.therapy == Therapies.MONO:
+            param.annualTreatmentCost = zido_cost
+        elif self.therapy == Therapies.COMBO:
+            param.annualTreatmentCost = zido_cost + lami_cost
 
         # sample from beta distributions that are assumed for annual state utilities
         for dist in self.annualStateUtilityRVGs:
