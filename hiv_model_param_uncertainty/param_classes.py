@@ -66,15 +66,16 @@ class ParameterGenerator:
                 fit_output = rvgs.Gamma.fit_mm(mean=cost, st_dev=cost / 5)
                 # append the distribution
                 self.annualStateCostRVGs.append(
-                    rvgs.Gamma(a=fit_output["a"], loc=0, scale=fit_output["scale"]))
+                    rvgs.Gamma(shape=fit_output["shape"], loc=0, scale=fit_output["scale"]))
 
         # create a gamma distribution for annual treatment cost with each drug
         # first fit the gamma distribution to the cost of each drug
         fit_output_zido = rvgs.Gamma.fit_mm(mean=data.Zidovudine_COST, st_dev=data.Zidovudine_COST / 5)
         fit_output_lami = rvgs.Gamma.fit_mm(mean=data.Lamivudine_COST, st_dev=data.Lamivudine_COST / 5)
+
         # then create the gamma distribution for the cost of each drug
-        self.annualZidovudineCostRVG = rvgs.Gamma(a=fit_output_zido["a"], loc=0, scale=fit_output_zido["scale"])
-        self.annualLamivudineCostRVG = rvgs.Gamma(a=fit_output_lami["a"], loc=0, scale=fit_output_lami["scale"])
+        self.annualZidovudineCostRVG = rvgs.Gamma(shape=fit_output_zido["shape"], loc=0, scale=fit_output_zido["scale"])
+        self.annualLamivudineCostRVG = rvgs.Gamma(shape=fit_output_lami["shape"], loc=0, scale=fit_output_lami["scale"])
 
         # create beta distributions for annual state utility
         for utility in data.ANNUAL_STATE_UTILITY:
