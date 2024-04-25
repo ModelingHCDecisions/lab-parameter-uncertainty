@@ -36,11 +36,11 @@ class ParameterGenerator:
         self.annualLamivudineCostRVG = None   # gamma distribution for the cost of lamivudine
 
         # create Dirichlet distributions for transition probabilities
-        for probs in data.TRANS_MATRIX:
+        for row in data.TRANS_MATRIX:
             # note:  for a Dirichlet distribution all values of the argument 'a' should be non-zero.
             # setting if_ignore_0s to True allows the Dirichlet distribution to take 'a' with zero values.
             self.probMatrixRVG.append(
-                rvgs.Dirichlet(a=probs, if_ignore_0s=True))
+                rvgs.Dirichlet(a=row, if_ignore_0s=True))
 
         # treatment relative risk
         rr_ci = [0.365, 0.71]  # confidence interval of the treatment relative risk
