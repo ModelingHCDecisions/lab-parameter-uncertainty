@@ -154,11 +154,12 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     # do CEA
     CEA = econ.CEA(
         strategies=[mono_therapy_strategy, combo_therapy_strategy],
-        if_paired=True
+        if_paired=True,
+        wtp_range=(0, 50000), # willingness-to-pay range for one additional QALY
     )
 
     # show the cost-effectiveness plane
-    CEA.plot_CE_plane(
+    CEA.plot_ce_plane(
         title='Cost-Effectiveness Analysis',
         x_label='Additional Discounted QALY',
         y_label='Additional Discounted Cost',
@@ -168,7 +169,7 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         file_name='figs/cea.png')
 
     # report the CE table
-    CEA.build_CE_table(
+    CEA.export_ce_table(
         interval_type='p',  # uncertainty (projection) interval for cost and effect estimates but
                             # for ICER, confidence interval will be reported.
         alpha=data.ALPHA,
@@ -178,13 +179,13 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         file_name='CETable.csv')
 
     # CBA
-    NBA = econ.CBA(
-        strategies=[mono_therapy_strategy, combo_therapy_strategy],
-        wtp_range=(0, 50000),
-        if_paired=True
-    )
+    # NBA = econ._(
+    #     strategies=[mono_therapy_strategy, combo_therapy_strategy],
+    #     wtp_range=(0, 50000),
+    #     if_paired=True
+    # )
     # show the net monetary benefit figure
-    NBA.plot_marginal_nmb_lines(
+    CEA.plot_incremental_nmb_lines(
         title='Cost-Benefit Analysis',
         x_label='Willingness-To-Pay for One Additional QALY ($)',
         y_label='Incremental Net Monetary Benefit ($)',

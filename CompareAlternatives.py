@@ -4,7 +4,7 @@ import hiv_model_param_uncertainty.param_classes as param
 import hiv_model_param_uncertainty.support as support
 
 N_COHORTS = 100  # number of cohorts
-POP_SIZE = 500  # population size of each cohort
+POP_SIZE = 50  # population size of each cohort
 
 # create a multi-cohort to simulate under mono therapy
 multiCohortMono = model.MultiCohort(
