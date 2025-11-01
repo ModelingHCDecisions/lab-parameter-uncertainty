@@ -11,33 +11,42 @@ def print_outcomes(multi_cohort_outcomes, therapy_name):
     :param multi_cohort_outcomes: outcomes of a simulated multi-cohort
     :param therapy_name: the name of the selected therapy
     """
-    # mean and prediction interval of patient survival time
-    survival_mean_PI_text = multi_cohort_outcomes.statMeanSurvivalTime.get_formatted_mean_and_interval(
-        interval_type='p', alpha=data.ALPHA, deci=2)
+    for interval_type in ('c', 'p'):
 
-    # mean and prediction interval text of time to AIDS
-    time_to_HIV_death_PI_text = multi_cohort_outcomes.statMeanTimeToAIDS.get_formatted_mean_and_interval(
-        interval_type='p', alpha=data.ALPHA, deci=2)
+        if interval_type == 'c':
+            interval_text = '{:.{prec}%} confidence interval'.format(1 - data.ALPHA, prec=0)
+        elif interval_type == 'p':
+            interval_text = '{:.{prec}%} uncertainty interval'.format(1 - data.ALPHA, prec=0)
+        else:
+            raise ValueError('Invalid interval type')
 
-    # mean and prediction interval text of discounted total cost
-    cost_mean_PI_text = multi_cohort_outcomes.statMeanCost.get_formatted_mean_and_interval(
-        interval_type='p', alpha=data.ALPHA, deci=2, form=',')
+        # mean and prediction interval of patient survival time
+        survival_mean_PI_text = multi_cohort_outcomes.statMeanSurvivalTime.get_formatted_mean_and_interval(
+            interval_type=interval_type, alpha=data.ALPHA, deci=2)
 
-    # mean and prediction interval text of discounted total QALY
-    utility_mean_PI_text = multi_cohort_outcomes.statMeanQALY.get_formatted_mean_and_interval(
-        interval_type='p', alpha=data.ALPHA, deci=2)
+        # mean and prediction interval text of time to AIDS
+        time_to_HIV_death_PI_text = multi_cohort_outcomes.statMeanTimeToAIDS.get_formatted_mean_and_interval(
+            interval_type=interval_type, alpha=data.ALPHA, deci=2)
 
-    # print outcomes
-    print(therapy_name)
-    print("  Estimate of mean survival time and {:.{prec}%} uncertainty interval:".format(1 - data.ALPHA, prec=0),
-          survival_mean_PI_text)
-    print("  Estimate of mean time to AIDS and {:.{prec}%} uncertainty interval:".format(1 - data.ALPHA, prec=0),
-          time_to_HIV_death_PI_text)
-    print("  Estimate of mean discounted cost and {:.{prec}%} uncertainty interval:".format(1 - data.ALPHA, prec=0),
-          cost_mean_PI_text)
-    print("  Estimate of mean discounted utility and {:.{prec}%} uncertainty interval:".format(1 - data.ALPHA, prec=0),
-          utility_mean_PI_text)
-    print("")
+        # mean and prediction interval text of discounted total cost
+        cost_mean_PI_text = multi_cohort_outcomes.statMeanCost.get_formatted_mean_and_interval(
+            interval_type=interval_type, alpha=data.ALPHA, deci=2, form=',')
+
+        # mean and prediction interval text of discounted total QALY
+        utility_mean_PI_text = multi_cohort_outcomes.statMeanQALY.get_formatted_mean_and_interval(
+            interval_type=interval_type, alpha=data.ALPHA, deci=2)
+
+        # print outcomes
+        print(therapy_name)
+        print("  Estimate of mean survival time and {}:".format(interval_text),
+              survival_mean_PI_text)
+        print("  Estimate of mean time to AIDS and {}:".format(interval_text),
+              time_to_HIV_death_PI_text)
+        print("  Estimate of mean discounted cost and {}:".format(interval_text),
+              cost_mean_PI_text)
+        print("  Estimate of mean discounted utility and {}:".format(interval_text),
+              utility_mean_PI_text)
+        print("")
 
 
 def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
